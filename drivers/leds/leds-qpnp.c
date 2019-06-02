@@ -2819,7 +2819,7 @@ static ssize_t rgb_blink_store(struct device *dev,
 	const char *buf, size_t count)
 {
 	struct rgb_sync *rgb_sync;
-	struct qpnp_led_data *led = { 0 };
+	struct qpnp_led_data *led;
 	unsigned long blinking;
 	struct led_classdev *led_cdev = dev_get_drvdata(dev);
 	ssize_t rc = -EINVAL, i;
@@ -2879,10 +2879,6 @@ static const struct attribute_group led_attr_group = {
 	.attrs = led_attrs,
 };
 
-static struct attribute *rgb_blink_attrs[] = {
-	&dev_attr_rgb_blink.attr,
-	NULL
-};
 
 static struct attribute *pwm_attrs[] = {
 	&dev_attr_pwm_us.attr,
@@ -2901,6 +2897,11 @@ static struct attribute *lpg_attrs[] = {
 
 static struct attribute *blink_attrs[] = {
 	&dev_attr_blink.attr,
+	NULL
+};
+
+static struct attribute *rgb_blink_attrs[] = {
+	&dev_attr_rgb_blink.attr,
 	NULL
 };
 
@@ -4264,7 +4265,6 @@ static int qpnp_leds_probe(struct platform_device *pdev)
 
 				if (rgb_sync)
 					rgb_sync->led_data[QPNP_ID_TO_RGB_IDX(led->id)] = led;
-
 			} else if (led->rgb_cfg->pwm_cfg->mode == LPG_MODE) {
 				rc = sysfs_create_group(&led->cdev.dev->kobj,
 					&lpg_attr_group);
